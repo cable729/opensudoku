@@ -24,7 +24,17 @@ class FPuzzleDecoderTests {
     }
 
     @Test
-    fun decompress() {
-        TODO()
+    fun decompress_ThenRecompress() {
+        val decompressed = LZString.decompressFromBase64(sampleCompressedPuzzle)
+
+        val recompressed = LZString.compressToBase64(decompressed)
+
+        assertEquals(sampleCompressedPuzzle, recompressed)
+    }
+
+    @Test
+    fun decompressToDomain() {
+        // should not throw
+        FPuzzleDecoder.decode(sampleCompressedPuzzle)
     }
 }

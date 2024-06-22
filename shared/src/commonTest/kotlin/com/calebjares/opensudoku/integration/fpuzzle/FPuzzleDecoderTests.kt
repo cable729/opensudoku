@@ -5,6 +5,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class FPuzzleDecoderTests {
     private companion object {
@@ -29,12 +30,19 @@ class FPuzzleDecoderTests {
 
         val recompressed = LZString.compressToBase64(decompressed)
 
+        // TODO: this fails on wasm because floats have extra bits added. E.g. 0.80000001968
+        // Tracked by https://youtrack.jetbrains.com/issue/KT-59118/WASM-floating-point-toString-inconsistencies
+        // Rather than adjust for this, I'll wait for a bug fix. I don't think it affects anything.
         assertEquals(sampleCompressedPuzzle, recompressed)
     }
 
     @Test
     fun decompressToDomain() {
-        // should not throw
-        FPuzzleDecoder.decode(sampleCompressedPuzzle)
+        val puzzle = FPuzzleDecoder.decode(sampleCompressedPuzzle)
+
+        assertEquals(9, puzzle.size)
+        assertNull(puzzle.title)
+        assertEquals(1, puzzle.killerCage?.size)
+        assertEquals("R2C3", puzzle.killerCage!!.single().cells?.first()?.address)
     }
 }
